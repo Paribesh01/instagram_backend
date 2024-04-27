@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { CreatePostDto } from './dto/createPost.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { UserService } from 'src/user/user.service';
+import { UpdatePostDto } from './dto/updatePost.dto';
 
 @Injectable()
 export class PostService {
@@ -30,7 +31,7 @@ export class PostService {
   async deletePost(userId:number,id:number){
     try{
         const deletedPost = await this.databaseService.post.delete({where:{
-            id:Number(id),
+            id:id,
             authorId:userId
         }})
         return deletedPost
@@ -38,6 +39,19 @@ export class PostService {
         return e.message
     }
   }
+
+async getOnePost(userId:number,id:number){
+  try{
+    const foundedPost = await this.databaseService.post.findUnique({where:{
+      id:id,
+      authorId:userId
+    }})
+    return foundedPost
+  }catch(e){
+    return e.message
+  }
+}
+
   async allPost(userId:number){
     try{
         const allPost = await this.databaseService.post.findMany({where:{
@@ -48,5 +62,23 @@ export class PostService {
         return e
     }
   }
+
+  async updatePost(id:number,userId:number,updatePostDto:UpdatePostDto){
+    try{
+      const updatedPost = await this.databaseService.post.update({where:{
+        id:id,
+        authorId:userId
+      },
+      data:{
+        ...updatePostDto
+      }
+    })
+    return updatedPost
+    }catch(e){
+      return e.message
+    }
+  }
+
+  
 
 }

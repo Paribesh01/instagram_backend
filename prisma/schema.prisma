@@ -14,21 +14,54 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  name      String?
-  password  String
-  posts     Post[]  @relation("created")
-  likedPost Post[]  @relation("Likes")
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  name            String?
+  password        String
+  posts           Post[]           @relation("created")
+  likedPost       Post[]           @relation("Likes")
+  comments        Comment[]        @relation("commented")
+  userPreferences UserPreferences?
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   title     String
   content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  likes     User[]   @relation("Likes")
-  author    User     @relation("created", fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  likes     User[]    @relation("Likes")
+  author    User      @relation("created", fields: [authorId], references: [id])
   authorId  Int
+  Comment   Comment[]
+}
+
+model Comment {
+  id            Int    @id @default(autoincrement())
+  content       String
+  commentedBy   User?  @relation("commented", fields: [commentUserId], references: [id])
+  commentUserId Int
+  Post          Post?  @relation(fields: [postId], references: [id])
+  postId        Int
+}
+
+enum AccountType {
+  PUBLIC
+  PRIVATE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHERS
+}
+
+model UserPreferences {
+  id          Int         @id @default(autoincrement())
+  bio         String?
+  website     String?
+  gender      Gender      @default(MALE)
+  accountType AccountType @default(PUBLIC)
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int         @unique
 }

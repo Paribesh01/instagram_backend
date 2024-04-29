@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String
-  posts    Post[]
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  name      String?
+  password  String
+  posts     Post[]  @relation("created")
+  likedPost Post[]  @relation("Likes")
 }
 
 model Post {
@@ -27,6 +28,7 @@ model Post {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
+  likes     User[]   @relation("Likes")
+  author    User     @relation("created", fields: [authorId], references: [id])
   authorId  Int
 }

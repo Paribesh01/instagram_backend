@@ -13,5 +13,15 @@ constructor (private readonly databaseService:DatabaseService){}
   async userFromEmail(email: string) {
     return this.databaseService.user.findUnique({ where: { email } });
   }
+
+  async getProfile(id:number){
+    return this.databaseService.user.findUnique({where:{id},select:{
+      id:true,
+      email:true,
+      name:true,
+      posts:true
+
+    }})
+  }
  
 }

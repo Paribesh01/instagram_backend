@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Prisma } from '@prisma/client';
 import { loginDto } from './dto/login.dto';
@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { registerDto } from './dto/register.dto';
 
 import { Public} from 'src/common/decorator/public';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,11 @@ return this.authService.signin(signinDto.email,signinDto.password)
 @Post ("register")
 signup(@Body()signupDto:registerDto){
     return this.authService.signup(signupDto.name,signupDto.email,signupDto.password)
+}
+@Get("getProfile")
+getProfile(@Req()request:Request){
+    return this.authService.getProfile(request["user"].sub)
+
 }
 
 

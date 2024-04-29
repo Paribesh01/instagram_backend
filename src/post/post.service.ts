@@ -56,6 +56,11 @@ async getOnePost(userId:number,id:number){
     try{
         const allPost = await this.databaseService.post.findMany({where:{
             authorId:userId
+        },select:{
+          id:true,
+          title:true,
+          content:true,
+          likes:true
         }})
         return allPost
     }catch(e){
@@ -79,6 +84,41 @@ async getOnePost(userId:number,id:number){
     }
   }
 
+  async likePost(id: number, userId: number) {
+    try {
+        const updatedUser = await this.databaseService.user.update({
+            where: { id: userId },
+            data: {
+              
+                likedPost: { connect: { id: id } }
+            }
+            ,select: {
+              id:true,
+              name:true,
+              likedPost: true
+          }
+        });
+        return updatedUser;
+    } catch (e) {
+        return e.message;
+    }
+}
+
+
+async removeLike(id: number, userId: number) {
+    try {
+        const updatedUser = await this.databaseService.user.update({
+            where: { id: userId },
+            data: {
+              
+                likedPost: { disconnect: { id: id } }
+            }
+        });
+        return updatedUser;
+    } catch (e) {
+        return e.message;
+    }
+}
   
 
 }

@@ -29,6 +29,15 @@ updatePost(@Param("id",ParseIntPipe)id:number,@Body()updatePostDto:UpdatePostDto
     return this.postService.updatePost(id,request["user"].sub,updatePostDto)
 }
 
+@Put("likePost/:id")
+likePost(@Param("id",ParseIntPipe)id:number,@Req()request:Request){
+    return this.postService.likePost(id,request['user'].sub)
+}
+@Put("removeLike/:id")
+removeLike(@Param("id",ParseIntPipe)id:number,@Req()request:Request){
+    return this.postService.removeLike(id,request['user'].sub)
+}
+
 
 @Delete("deletePost/:id")
 deletePost(@Param("id",ParseIntPipe)id:number,@Req()request:Request){

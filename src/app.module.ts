@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { PostModule } from './post/post.module';
 import { AuthGuard } from './auth/auth.gurd';
 import { APP_GUARD } from '@nestjs/core';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
-  imports: [DatabaseModule, UserModule, AuthModule, PostModule],
+  imports: [DatabaseModule, UserModule, AuthModule, PostModule, CommentModule],
   controllers: [AppController],
   providers: [AppService,{
     provide:APP_GUARD,

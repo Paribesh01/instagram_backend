@@ -84,6 +84,8 @@ async getOnePost(userId:number,id:number){
     }
   }
 
+  
+
   async likePost(id: number, userId: number) {
     try {
         const updatedUser = await this.databaseService.user.update({

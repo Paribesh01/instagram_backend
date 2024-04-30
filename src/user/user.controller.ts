@@ -18,5 +18,16 @@ export class UserController {
   async updatePrefence (@Req()request:Request,@Body()body:PrefencesDto){
     return await this.userService.setprefences(request["user"].sub,body)
   } 
-  
+  @Post(":email/follow")
+  async follow(@Req()request:Request,@Param("email")email:string){
+    return this.userService.follow(email,request["user"].sub)
+  }
+  @Post(":email/unfollow")
+  async unFollow(@Req()request:Request,@Param("email")email:string){
+    return this.userService.unFollow(email,request["user"].sub)
+  }
+  @Get(":email/following")
+  async following(@Param("email")email:string){
+    return this.following(email)
+  }
 }

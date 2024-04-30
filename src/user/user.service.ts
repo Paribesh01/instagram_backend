@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { DatabaseService } from 'src/database/database.service';
@@ -50,6 +50,61 @@ constructor (private readonly databaseService:DatabaseService){}
       posts:true
 
     }})
+  }
+
+
+  async follow(email:string,userId:number){
+    try{
+      const userToFollow = await this.databaseService.user.findUnique({where:{id:userId}})
+      if(userToFollow.email==email){
+        return new BadRequestException("can't follow yourself")
+      }
+      const user = await this.databaseService.user.update({where:{email},data:{
+        followedBy:{
+          connect:{
+            id:userId
+          }
+        }
+      },select:{
+        followedBy:true,
+        following:true
+      }})
+      return user
+    }catch{
+      return new ConflictException("Error while following user")
+    }
+  }
+  async unFollow(email:string,userId:number){
+    try{
+      const userToFollow = await this.databaseService.user.findUnique({where:{id:userId}})
+      if(userToFollow.email==email){
+        return new BadRequestException("can't follow yourself")
+      }
+      const user = await this.databaseService.user.update({where:{email},data:{
+        followedBy:{
+          disconnect:{
+            id:userId
+          }
+        }
+      },select:{
+        followedBy:true,
+        following:true
+      }})
+      return user
+    }catch{
+      return new ConflictException("Error while following user")
+    }
+  }
+  async following(email:string){
+    try{
+
+      const following = await this.databaseService.user.findFirst({where:{email},select:{
+        following:true
+      }})
+      return following.following
+    }catch{
+      return new Error("Error while finding following")
+    }
   }
  
 }

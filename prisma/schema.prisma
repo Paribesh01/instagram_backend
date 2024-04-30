@@ -22,6 +22,8 @@ model User {
   likedPost       Post[]           @relation("Likes")
   comments        Comment[]        @relation("commented")
   userPreferences UserPreferences?
+  followedBy      User[]           @relation("UserFollows")
+  following       User[]           @relation("UserFollows")
 }
 
 model Post {

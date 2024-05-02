@@ -4,16 +4,22 @@ import { AuthController } from './auth.controller';
 import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 @Module({
-  imports:[UserModule,
+  imports: [
+    UserModule,
     JwtModule.register({
       global: true,
-      secret: "123123123",
+      // Get JWT secret from environment variables
+      secret: process.env.JWTSEC,
       signOptions: { expiresIn: '60s' },
-    })
+    }),
   ],
-  providers: [AuthService,UserService],
-  controllers: [AuthController]
+  providers: [AuthService, UserService],
+  controllers: [AuthController],
 })
 export class AuthModule {}

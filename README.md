@@ -1,73 +1,149 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Instagram Backend API Documentation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Introduction
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This document outlines the API endpoints and functionalities of the Instagram backend built with NestJS.
 
-## Description
+## Authentication
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The Instagram backend supports authentication using JWT (JSON Web Tokens). All authenticated routes require a valid JWT token to access.
 
-## Installation
+### Authentication Endpoints
 
-```bash
-$ npm install
-```
+- **POST /auth/login**
 
-## Running the app
+  - Description: Authenticate user and generate JWT token.
+  - Request Body:
+    - `email`: User's email.
+    - `password`: User's password.
+  - Response: JWT token upon successful authentication.
 
-```bash
-# development
-$ npm run start
+- **POST /auth/register**
 
-# watch mode
-$ npm run start:dev
+  - Description: Register a new user.
+  - Request Body:
+    - `email`: User's email.
+    - `password`: User's password.
+    - `name`:User's name
+  - Response: Success message upon successful registration.
 
-# production mode
-$ npm run start:prod
-```
+- **GET /auth/getProfile**
+  - Description: Get user profile information.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: User profile information.
 
-## Test
+## User Management
 
-```bash
-# unit tests
-$ npm run test
+These endpoints manage user-related functionalities such as profile management and following/unfollowing users.
 
-# e2e tests
-$ npm run test:e2e
+- **GET /user/me**
 
-# test coverage
-$ npm run test:cov
-```
+  - Description: Get current user's profile.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Current user's profile information.
 
-## Support
+- **POST /user/prefence**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+  - Description: Update user preferences.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Request Body: User preference data.
+  - Response: Success message upon successful update.
 
-## Stay in touch
+- **POST /user/:email/follow**
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  - Description: Follow a user by email.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Success message upon successful follow.
 
-## License
+- **POST /user/:email/unfollow**
 
-Nest is [MIT licensed](LICENSE).
+  - Description: Unfollow a user by email.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Success message upon successful unfollow.
+
+- **GET /user/:email/following**
+  - Description: Get users followed by a specific user.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: List of users followed by the specified user.
+
+## Post Management
+
+These endpoints manage post-related functionalities such as creating, retrieving, updating, and deleting posts.
+
+- **POST /post/create**
+
+  - Description: Create a new post.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Request Body: Post data.
+  - Response: Success message upon successful post creation.
+
+- **GET /post/allPost**
+
+  - Description: Get all posts.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: List of all posts.
+
+- **GET /post/:id**
+
+  - Description: Get a specific post by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Details of the specified post.
+
+- **PUT /post/updatePost/:id**
+
+  - Description: Update a post by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Request Body: Updated post data.
+  - Response: Success message upon successful update.
+
+- **PUT /post/likePost/:id**
+
+  - Description: Like a post by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Success message upon successful like.
+
+- **PUT /post/removeLike/:id**
+
+  - Description: Remove like from a post by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Success message upon successful removal of like.
+
+- **DELETE /post/deletePost/:id**
+  - Description: Delete a post by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Success message upon successful deletion.
+
+## Comment Management
+
+These endpoints manage comment-related functionalities such as posting, retrieving, updating, and deleting comments.
+
+- **POST /comment/posComment/:postId**
+
+  - Description: Post a comment on a specific post.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Request Body: Comment data.
+  - Response: Success message upon successful comment creation.
+
+- **GET /comment/:id**
+
+  - Description: Get a specific comment by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Details of the specified comment.
+
+- **PATCH /comment/:id**
+
+  - Description: Update a comment by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Request Body: Updated comment data.
+  - Response: Success message upon successful update.
+
+- **DELETE /comment/:id**
+
+  - Description: Delete a comment by ID.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: Success message upon successful deletion.
+
+- **GET /comment/post/:postId**
+  - Description: Get all comments on a specific post.
+  - Authorization Header: `Bearer <JWT Token>`
+  - Response: List of comments on the specified post.

@@ -24,10 +24,24 @@ constructor (private readonly databaseService:DatabaseService){}
       bio,
       gender:gender as genderEnum,
       accountType:accountType as accountEnum,
-      website
+      website,
     }})
     return pre
   }
+  async uplodeDp(userId:number,imageUrl:string){
+    try{
+      
+      const pre = await this.databaseService.userPreferences.update({where:{userId},data:{
+        
+        imageUrl:imageUrl,
+      }})
+      return pre
+    }catch(e){
+      console.log(e)
+      return new ConflictException("Error while uploading Dp")
+    }
+}
+
   async getPrefences (userId:number){
     const result = await this.databaseService.userPreferences.findFirst({where:{
       userId

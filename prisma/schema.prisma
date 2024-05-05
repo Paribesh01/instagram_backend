@@ -66,4 +66,5 @@ model UserPreferences {
   accountType AccountType @default(PUBLIC)
   user        User        @relation(fields: [userId], references: [id])
   userId      Int         @unique
+  imageUrl    String?
 }

@@ -28,6 +28,10 @@ constructor (private readonly databaseService:DatabaseService){}
     }})
     return pre
   }
+
+
+
+
   async uplodeDp(userId:number,imageUrl:string){
     try{
       
@@ -61,7 +65,23 @@ constructor (private readonly databaseService:DatabaseService){}
       id:true,
       email:true,
       name:true,
-      posts:true
+      userPreferences:{
+        select:{
+          bio:true,
+          website:true,
+          gender:true,
+          accountType:true,
+          imageUrl:true
+        }
+
+      },
+      _count:{
+        select:{
+
+          followedBy:true,
+          following:true
+        }
+      }
 
     }})
   }

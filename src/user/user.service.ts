@@ -65,6 +65,20 @@ constructor (private readonly databaseService:DatabaseService){}
       id:true,
       email:true,
       name:true,
+      posts:{
+        select:{
+          id:true,
+          title:true,
+          content:true,
+          imgUrl:true,
+          _count:{
+            select:{
+              likes:true,
+              Comment:true
+            }
+          }
+        }
+      },
       userPreferences:{
         select:{
           bio:true,
@@ -79,7 +93,8 @@ constructor (private readonly databaseService:DatabaseService){}
         select:{
 
           followedBy:true,
-          following:true
+          following:true,
+          posts:true
         }
       }
 

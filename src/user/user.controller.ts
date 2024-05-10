@@ -33,7 +33,7 @@ res.sendFile(filename,{root:'./public/img'})
     destination:'public/img',
     filename:(req,file,cb)=>{
       const filename = (req as Request)["user"].sub
-      cb(null,filename);
+      cb(null,`${filename}`);
     }
   })
 }))

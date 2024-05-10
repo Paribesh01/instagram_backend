@@ -22,7 +22,7 @@ export class UserController {
     return await this.userService.setprefences(request["user"].sub,body,)
   } 
 @Public()
-@Get("public/img/:url")
+@Get("img/:url")
 async getImage(@Param("url")filename:string,@Res()res:Response){
 res.sendFile(filename,{root:'./public/img'})
 }
@@ -32,7 +32,8 @@ res.sendFile(filename,{root:'./public/img'})
   storage:diskStorage({
     destination:'public/img',
     filename:(req,file,cb)=>{
-      cb(null,file.originalname);
+      const filename = (req as Request)["user"].sub
+      cb(null,filename);
     }
   })
 }))

@@ -33,12 +33,12 @@ res.sendFile(filename,{root:'./public/img'})
     destination:'public/img',
     filename:(req,file,cb)=>{
       const filename = (req as Request)["user"].sub
-      cb(null,`${filename}`);
+      cb(null,`${filename}${file.originalname}`);
     }
   })
 }))
 async uploadDp(@UploadedFile()file:Express.Multer.File,@Req()request:Request){
-  return await this.userService.uplodeDp(request['user'].sub,file.originalname)
+  return await this.userService.uplodeDp(request['user'].sub,`${request['user'].sub}${file.originalname}`)
 } 
 
   @Post(":email/follow")

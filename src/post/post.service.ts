@@ -28,6 +28,17 @@ export class PostService {
       return e.message;
     }
   }
+
+  async uploadImage(userId:number,postId:number,imgUrl:string){
+    try{
+      const updatedPost = await this.databaseService.post.update({where:{id:postId,authorId:userId},data:{
+        imgUrl
+      }})
+      return updatedPost
+    }catch(e){
+      return e.message
+    }
+  }
   async deletePost(userId:number,id:number){
     try{
         const deletedPost = await this.databaseService.post.delete({where:{

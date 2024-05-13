@@ -71,7 +71,8 @@ async getOnePost(userId:number,id:number){
           id:true,
           title:true,
           content:true,
-          likes:true
+          likes:true,
+          imgUrl:true
         }})
         return allPost
     }catch(e){

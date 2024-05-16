@@ -47,6 +47,8 @@ async signup(name:string,email:string,pass:string){
           };
 }
 
+
+
 async getProfile(id:number){
     const profile = await this.userService.getProfile(id)
     return profile

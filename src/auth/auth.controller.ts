@@ -30,6 +30,10 @@ getProfile(@Req()request:Request){
     return this.authService.getProfile(request["user"].sub)
 
 }
-
-
+@Get("me")
+async me(){
+    return {
+        valid:true
+    }
+}
 }

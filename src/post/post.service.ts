@@ -29,6 +29,45 @@ export class PostService {
     }
   }
 
+
+  async Feed(userId:number){
+    try{
+      //select feed whose authorId is not userid
+      const feedData = await this.databaseService.post.findMany({
+        where: {
+          authorId: {
+            not: userId
+          }
+        },select:{
+          id:true,
+          author:{
+            select:{
+              name:true,
+              userPreferences:{
+                select:{
+                  imageUrl:true
+                }
+              }
+            }
+          },
+          title:true,
+          imgUrl:true,
+          _count:{
+            select:{
+              likes:true,
+              Comment:true
+            }
+          }
+        }
+      });
+      return  feedData
+    }catch(e){
+      console.log(e.message)
+    }
+  }
+
+
+
   async uploadImage(userId:number,postId:number,imgUrl:string){
     try{
       const updatedPost = await this.databaseService.post.update({where:{id:postId,authorId:userId},data:{
@@ -72,7 +111,8 @@ async getOnePost(userId:number,id:number){
           title:true,
           content:true,
           likes:true,
-          imgUrl:true
+          imgUrl:true,
+          
         }})
         return allPost
     }catch(e){

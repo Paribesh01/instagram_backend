@@ -17,6 +17,10 @@ export class PostController {
 createPost(@Body()createPostDto:CreatePostDto,@Req() request:Request){
     return this.postService.createPost(createPostDto,request)
 }
+@Get ("feed")
+getFeed(@Req()request:Request){
+    return this.postService.Feed(request["user"].sub)
+}
 
 @Get("allPost")
 allPost(@Req()request:Request){

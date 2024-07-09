@@ -1,0 +1,24 @@
+version: '3.5'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    container_name: my-db
+    ports:
+      - '5432:5432'
+    restart: always
+
+  app:
+    build: .
+    container_name: my-app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    restart: always
+
+  

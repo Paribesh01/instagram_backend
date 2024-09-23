@@ -14,9 +14,9 @@ datasource db {
 }
 
 model User {
-  id              Int              @id @default(autoincrement())
+  id              String           @id @default(uuid())
   email           String           @unique
-  name            String?
+  username        String           @unique
   password        String
   posts           Post[]           @relation("created")
   likedPost       Post[]           @relation("Likes")
@@ -27,25 +27,24 @@ model User {
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
-  title     String
+  id        String    @id @default(uuid())
   content   String
   imgUrl    String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   likes     User[]    @relation("Likes")
   author    User      @relation("created", fields: [authorId], references: [id])
-  authorId  Int
+  authorId  String
   Comment   Comment[]
 }
 
 model Comment {
-  id            Int    @id @default(autoincrement())
+  id            String @id @default(uuid())
   content       String
   commentedBy   User?  @relation("commented", fields: [commentUserId], references: [id])
-  commentUserId Int
+  commentUserId String
   Post          Post?  @relation(fields: [postId], references: [id])
-  postId        Int
+  postId        String
 }
 
 enum AccountType {
@@ -60,12 +59,12 @@ enum Gender {
 }
 
 model UserPreferences {
-  id          Int         @id @default(autoincrement())
+  id          String      @id @default(uuid())
   bio         String?
   website     String?
   gender      Gender      @default(MALE)
   accountType AccountType @default(PUBLIC)
   user        User        @relation(fields: [userId], references: [id])
-  userId      Int         @unique
+  userId      String      @unique
   imageUrl    String?
 }

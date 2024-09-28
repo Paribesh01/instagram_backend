@@ -5,30 +5,48 @@ import { CreatePostDto } from "./dto/createPost.dto";
 import { DatabaseService } from "src/database/database.service";
 import { UserService } from "src/user/user.service";
 import { UpdatePostDto } from "./dto/updatePost.dto";
+import { randomUUID } from "crypto";
+import { S3Service } from "src/s3/s3.service";
+import * as sharp from "sharp";
 
 @Injectable()
 export class PostService {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly s3Service:S3Service 
   ) {}
 
   async createPost(
     createPostDto: CreatePostDto,
     request: Request,
-    imgUrl: string
+    images: Express.Multer.File[]
   ) {
     try {
+
+      const imageKeys: string[] = [];
+      const imageUrls: string[] = [];
+      for (const image of images) {
+        const imgUUID = randomUUID();
+        imageKeys.push(imgUUID);
+        imageUrls.push(this.s3Service.getImageUrl(imgUUID));
+        const optimizedImg = await this.transformImage(image.buffer);
+        this.s3Service.uploadImage(optimizedImg, `${imgUUID}.png`);
+      }
+
       const userId = request["user"].sub;
       const NewPost = await this.databaseService.post.create({
         data: {
           content: createPostDto.content,
           authorId: userId,
-          imgUrl,
+          imagesKey: imageKeys,
+          imagesUrl: imageUrls,
+          
         },
       });
       return NewPost;
     } catch (e) {
+      console.log(e)
       return e.message;
     }
   }
@@ -54,7 +72,7 @@ export class PostService {
               },
             },
           },
-          imgUrl: true,
+          imagesUrl: true,
           _count: {
             select: {
               likes: true,
@@ -77,6 +95,11 @@ export class PostService {
           authorId: userId,
         },
       });
+
+      for (const key of deletedPost.imagesKey) {
+        await this.s3Service.removeImage(key);
+      }
+
       return deletedPost;
     } catch (e) {
       return e.message;
@@ -107,7 +130,7 @@ export class PostService {
           id: true,
           content: true,
           likes: true,
-          imgUrl: true,
+          imagesUrl: true,
         },
       });
       return allPost;
@@ -164,5 +187,10 @@ export class PostService {
     } catch (e) {
       return e.message;
     }
+  }
+
+
+  private async transformImage(image: Buffer) {
+    return await sharp(image).resize(320, 320).toBuffer();
   }
 }

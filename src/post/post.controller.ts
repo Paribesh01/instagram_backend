@@ -10,7 +10,7 @@ import {
   Put,
   Req,
   Res,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from "@nestjs/common";
 import { PostService } from "./post.service";
@@ -18,8 +18,8 @@ import { Request, Response } from "express";
 import { CreatePostDto } from "./dto/createPost.dto";
 import { request } from "http";
 import { UpdatePostDto } from "./dto/updatePost.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+// import { diskStorage } from "multer";
 import { Public } from "src/common/decorator/public";
 import { randomUUID } from "crypto";
 
@@ -28,25 +28,27 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post("")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "public/post",
-        filename: (req, file, cb) => {
-          cb(null, `${req.params.postId}${file.originalname}`);
-        },
-      }),
-    })
-  )
+  // @UseInterceptors(
+  //   FileInterceptor("file", {
+  //     storage: diskStorage({
+  //       destination: "public/post",
+  //       filename: (req, file, cb) => {
+  //         cb(null, `${req.params.postId}${file.originalname}`);
+  //       },
+  //     }),
+  //   })
+  // )
+
+  @UseInterceptors(FilesInterceptor('images', 10))
   createPost(
     @Body() createPostDto: CreatePostDto,
     @Req() request: Request,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFiles() images: Express.Multer.File[],
   ) {
     return this.postService.createPost(
       createPostDto,
       request,
-      `${randomUUID()}${file.originalname}`
+      images
     );
   }
   @Get("feed")

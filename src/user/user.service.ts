@@ -83,7 +83,7 @@ export class UserService {
             id: true,
 
             content: true,
-            imgUrl: true,
+            imagesUrl: true,
             _count: {
               select: {
                 likes: true,

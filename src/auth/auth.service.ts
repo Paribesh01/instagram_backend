@@ -28,9 +28,9 @@ export class AuthService {
         sub: user.id,
         name: user.username,
       };
-      return { accessToken: await this.jwtService.signAsync(payload) };
+      return { token: await this.jwtService.signAsync(payload) };
     }
-    throw new UnauthorizedException();
+    throw new UnauthorizedException("Username or password is invalid");
   }
 
   async signup(username: string, email: string, pass: string) {
@@ -48,7 +48,7 @@ export class AuthService {
     const foundUser = await this.userService.userFromUsername(username);
     const payload = { sub: foundUser.id, name: foundUser.username };
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      token: await this.jwtService.signAsync(payload),
     };
   }
 

@@ -19,7 +19,7 @@ export class AuthController {
     return this.authService.signin(signinDto.username, signinDto.password);
   }
   @Public()
-  @Post("register")
+  @Post("signup")
   @UsePipes(new ZodValidationPipe(SignupSchema))
   signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(

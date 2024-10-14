@@ -10,9 +10,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { CommentModule } from './comment/comment.module';
 import { S3Service } from './s3/s3.service';
 import { S3Module } from './s3/s3.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
-  imports: [DatabaseModule, UserModule, AuthModule, PostModule, CommentModule, S3Module],
+  imports: [DatabaseModule, UserModule, AuthModule, PostModule, CommentModule, S3Module, MailModule],
   controllers: [AppController],
   providers: [AppService,{
     provide:APP_GUARD,

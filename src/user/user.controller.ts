@@ -13,7 +13,6 @@ import {
   UsePipes,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { Prisma } from "@prisma/client";
 import { Request, Response, request } from "express";
 import { PrefencesDto } from "./dto/prefences.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -24,7 +23,7 @@ import { LoginSchema } from "src/auth/dto/login.dto";
 
 @Controller("user")
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get("me")
   async getPrefence(@Req() request: Request) {

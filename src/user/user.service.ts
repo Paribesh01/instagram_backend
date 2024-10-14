@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
@@ -10,7 +11,7 @@ import { PrefencesDto } from "./dto/prefences.dto";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) { }
 
   async create(createUserDto: Prisma.UserCreateInput) {
     return this.databaseService.user.create({
@@ -110,6 +111,22 @@ export class UserService {
         },
       },
     });
+  }
+
+
+  async verifyUser(id: string) {
+    try {
+      return await this.databaseService.user.update({
+        where: { id },
+        data: {
+          verified: true,
+        }, select: {
+          password: false
+        }
+      });
+    } catch (e) {
+      throw new NotFoundException('Invalid token');
+    }
   }
 
   async follow(username: string, userId: string) {

@@ -24,9 +24,9 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: Instagram:latest
+          tags: paribesh/Instagram:latest
       - name: verify pushed image
-        run: docker pull instagram:latest
+        run: docker pull paribesh/instagram:latest
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -35,4 +35,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-          
+            sudo docker pull paribesh/instagram:latest
+            sudo docker stop my-app || true
+            sudo docker rm my-app || true
+            sudo docker run -d --name my-app -p 8080:8080 paribesh/instagram:latest 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UsePipes } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, Req, UsePipes } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { Prisma } from "@prisma/client";
 import { LoginDto, LoginSchema } from "./dto/login.dto";
@@ -11,7 +11,7 @@ import { ZodValidationPipe } from "src/common/pipe/zod.pipe";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
   @Public()
   @Post("login")
   @UsePipes(new ZodValidationPipe(LoginSchema))
@@ -32,6 +32,15 @@ export class AuthController {
   getProfile(@Req() request: Request) {
     return this.authService.getProfile(request["user"].sub);
   }
+  @Public()
+  @Get('/confirm')
+  async verifyToken(@Query() { token }: { token: string }) {
+    return await this.authService.verifyToken(token);
+  }
+
+
+
+
   @Get("me")
   async me() {
     return {

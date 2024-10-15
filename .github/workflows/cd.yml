@@ -1,0 +1,38 @@
+name: CD 
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: Instagram:latest
+      - name: verify pushed image
+        run: docker pull instagram:latest
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+          

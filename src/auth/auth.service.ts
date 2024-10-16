@@ -26,6 +26,7 @@ export class AuthService {
   async signin(username: string, pass: string) {
     const user = await this.userService.userFromUsername(username);
     if (!user.verified) {
+      console.log("user", user)
       this.mailService.sendUserConfirmation(user, user.id);
       throw new ForbiddenException(
         'Message user not verified. Check your mail',

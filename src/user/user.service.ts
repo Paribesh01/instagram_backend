@@ -116,15 +116,17 @@ export class UserService {
 
   async verifyUser(id: string) {
     try {
-      return await this.databaseService.user.update({
+      console.log("id", id)
+      const user = await this.databaseService.user.update({
         where: { id },
         data: {
           verified: true,
-        }, select: {
-          password: false
         }
       });
+      delete user.password
+      return user
     } catch (e) {
+      console.log("invalid tokkken")
       throw new NotFoundException('Invalid token');
     }
   }

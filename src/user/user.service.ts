@@ -7,11 +7,14 @@ import {
 import { Prisma } from "@prisma/client";
 
 import { DatabaseService } from "src/database/database.service";
-import { PrefencesDto } from "./dto/prefences.dto";
+import { PreferencesDto } from "./dto/prefences.dto";
+import { randomUUID } from "crypto";
+import { S3Service } from "src/s3/s3.service";
+import * as sharp from "sharp";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly databaseService: DatabaseService) { }
+  constructor(private readonly databaseService: DatabaseService, private readonly s3Service: S3Service) { }
 
   async create(createUserDto: Prisma.UserCreateInput) {
     return this.databaseService.user.create({
@@ -26,7 +29,7 @@ export class UserService {
   async userFromUsername(username: string) {
     return this.databaseService.user.findUnique({ where: { username } });
   }
-  async setprefences(userId: string, body: PrefencesDto) {
+  async setprefences(userId: string, body: PreferencesDto) {
     type genderEnum = "MALE" | "FEMALE" | "OTHERS";
     type accountEnum = "PRIVATE" | "PUBLIC";
     const { bio, gender, website, accountType } = body;
@@ -42,31 +45,57 @@ export class UserService {
     return pre;
   }
 
-  async uplodeDp(userId: string, imageUrl: string) {
+  async uploadDp(userId: string, image: Express.Multer.File) {
     try {
-      const pre = await this.databaseService.userPreferences.update({
+      console.log("image", image)
+      const imgUUID = randomUUID(); // Generate a unique ID for the new profile picture
+      const optimizedImg = await this.transformImage(image.buffer);
+      await this.s3Service.uploadImage(optimizedImg, `${imgUUID}.png`);
+      const imageUrl = this.s3Service.getImageUrl(imgUUID)
+      const updatedPreferences = await this.databaseService.userPreferences.update({
         where: { userId },
         data: {
-          imageUrl: imageUrl,
+          imageUrl,
         },
       });
-      return pre;
+
+      return updatedPreferences;
     } catch (e) {
-      console.log(e);
-      return new ConflictException("Error while uploading Dp");
+
+      console.log("Error while uploading DP:", e);
+      throw new ConflictException("Error while uploading DP");
     }
   }
 
+  private async transformImage(image: Buffer) {
+    return await sharp(image).resize(320, 320).toBuffer();
+  }
+
   async getPrefences(userId: string) {
-    const result = await this.databaseService.userPreferences.findFirst({
+    console.log("htee")
+    const result = await this.databaseService.user.findFirst({
       where: {
-        userId,
+        id: userId,
       },
       select: {
-        bio: true,
-        website: true,
-        gender: true,
-        accountType: true,
+        username: true,
+        email: true,
+        _count: {
+          select: {
+            posts: true,
+            followedBy: true,
+            following: true
+          }
+        },
+        userPreferences: {
+          select: {
+            bio: true,
+            website: true,
+            gender: true,
+            accountType: true,
+            imageUrl: true
+          }
+        }
       },
     });
     return result;

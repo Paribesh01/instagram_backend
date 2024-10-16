@@ -6,6 +6,7 @@ import { UserModule } from "src/user/user.module";
 import { JwtModule } from "@nestjs/jwt";
 import * as dotenv from "dotenv";
 import { MailService } from "src/mail/mail.service";
+import { S3Service } from "src/s3/s3.service";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -19,7 +20,7 @@ dotenv.config();
       signOptions: { expiresIn: "5hr" },
     }),
   ],
-  providers: [AuthService, UserService, MailService],
+  providers: [AuthService, UserService, MailService, S3Service],
   controllers: [AuthController],
 })
 export class AuthModule { }

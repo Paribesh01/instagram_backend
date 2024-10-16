@@ -14,8 +14,8 @@ import {
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { Request, Response, request } from "express";
-import { PrefencesDto } from "./dto/prefences.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { PreferencesDto, PreferencesSchema } from "./dto/prefences.dto";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { Public } from "src/common/decorator/public";
 import { ZodValidationPipe } from "src/common/pipe/zod.pipe";
@@ -27,11 +27,13 @@ export class UserController {
 
   @Get("me")
   async getPrefence(@Req() request: Request) {
+    console.log("erere")
     return await this.userService.getPrefences(request["user"].sub);
   }
   @Post("prefence")
-  @UsePipes(new ZodValidationPipe(LoginSchema))
-  async updatePrefence(@Req() request: Request, @Body() body: PrefencesDto) {
+  @UsePipes(new ZodValidationPipe(PreferencesSchema))
+  async updatePrefence(@Req() request: Request, @Body() body: PreferencesDto) {
+    console.log("herer")
     return await this.userService.setprefences(request["user"].sub, body);
   }
   @Public()
@@ -40,27 +42,25 @@ export class UserController {
     res.sendFile(filename, { root: "./public/img" });
   }
 
-  @Post("uploadDp")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "public/img",
-        filename: (req, file, cb) => {
-          const filename = (req as Request)["user"].sub;
-          cb(null, `${filename}${file.originalname}`);
-        },
-      }),
-    })
-  )
+  @UseInterceptors(FileInterceptor('image'))
+  @Post('uploadDp')
   async uploadDp(
-    @UploadedFile() file: Express.Multer.File,
-    @Req() request: Request
+    @UploadedFile() image: Express.Multer.File,
+    @Req() request: Request,
   ) {
-    return await this.userService.uplodeDp(
-      request["user"].sub,
-      `${request["user"].sub}${file.originalname}`
+    console.log('dp dp');
+    console.log(image);
+
+    if (!image) {
+      throw new Error('No image uploaded');
+    }
+
+    return await this.userService.uploadDp(
+      request['user'].sub,
+      image,
     );
   }
+
 
   @Post(":username/follow")
   async follow(@Req() request: Request, @Param("username") username: string) {

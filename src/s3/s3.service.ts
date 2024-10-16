@@ -28,7 +28,8 @@ export class S3Service {
         ContentType: "image/png",
       });
       console.log("here")
-      return await this.client.send(command);
+      const res = await this.client.send(command);
+      console.log("res", res)
     } catch (e) {
 
       console.log(e)

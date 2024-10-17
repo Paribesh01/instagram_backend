@@ -101,6 +101,24 @@ export class UserService {
     return result;
   }
 
+
+  async getUser(id: string) {
+    const user = await this.databaseService.user.findUnique({
+      where: { id },
+      select: {
+        username: true,
+        id: true,
+        userPreferences: {
+          select: {
+            imageUrl: true,
+          }
+        }
+      }
+    });
+    return user;
+
+  }
+
   async getProfile(id: string) {
     return this.databaseService.user.findUnique({
       where: { id },

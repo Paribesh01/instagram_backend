@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   async getProfile(id: string) {
-    const profile = await this.userService.getProfile(id);
+    const profile = await this.userService.getUser(id);
     return profile;
   }
 

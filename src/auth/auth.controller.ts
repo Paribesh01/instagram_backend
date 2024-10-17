@@ -42,9 +42,7 @@ export class AuthController {
 
 
   @Get("me")
-  async me() {
-    return {
-      valid: true,
-    };
+  async me(@Req() request: Request) {
+    return await this.authService.getProfile(request["user"].sub);
   }
 }

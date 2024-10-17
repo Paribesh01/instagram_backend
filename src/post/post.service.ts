@@ -88,25 +88,10 @@ export class PostService {
         },
         select: {
           id: true,
-          author: {
-            select: {
-              username: true,
-              userPreferences: {
-                select: {
-                  imageUrl: true,
-                },
-              },
-            },
-          },
-          imagesUrl: true,
-          _count: {
-            select: {
-              likes: true,
-              Comment: true,
-            },
-          },
-        },
+        }
       });
+      console.log("feed Data")
+      console.log(feedData)
       return feedData;
     } catch (e) {
       console.log(e.message);
@@ -139,39 +124,54 @@ export class PostService {
           id: id,
         },
         select: {
+          author: {
+            select: {
+              username: true,
+              userPreferences: {
+                select: {
+                  imageUrl: true
+                }
+              }
+            }
+          },
           id: true,
-          imagesUrl: true,
+          imagesUrl: true, // Array of image URLs for the post
           _count: {
             select: {
-              likes: true,
-              Comment: true
+              likes: true, // Number of likes on the post
+              Comment: true // Number of comments on the post
             }
           },
           Comment: {
             select: {
-              id: true,
-              content: true,
+              id: true, // Comment ID
+              content: true, // Content of the comment
               commentedBy: {
                 select: {
-                  username: true,
+                  username: true, // Username of the person who commented
                   userPreferences: {
                     select: {
-                      imageUrl: true
+                      imageUrl: true // Author's profile image URL
                     }
                   }
                 }
               }
-
             }
-
           }
         }
       });
-      return foundedPost;
-    } catch (e) {
-      return e.message;
+
+      if (foundedPost) {
+        return foundedPost
+      }
+
+      return null; // Return null if no post is found
+    } catch (error) {
+      console.error("Error fetching the post:", error);
+      throw new Error("Failed to fetch post");
     }
   }
+
 
   async allPost(userId: string) {
     try {

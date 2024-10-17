@@ -14,20 +14,24 @@ import { Request } from "express";
 
 @Controller("comment")
 export class CommentController {
-  constructor(private readonly commentService: CommentService) {}
-
-  @Post("/posComment/:postId")
+  constructor(private readonly commentService: CommentService) { }
+  @Post("/:postId")
   async postComment(
-    @Body() content: string,
+    @Body() body: { comment: string },
     @Param("postId") postId: string,
     @Req() request: Request
   ) {
+
+    console.log("in the comment");
+    console.log(body.comment); // This should now log the actual comment string
+
     return this.commentService.postComment(
       postId,
-      request["user"].sub,
-      content
+      request["user"].sub, // Extract the user ID from the request
+      body.comment
     );
   }
+
 
   @Get(":id")
   async getOneComment(@Param("id") id: string) {

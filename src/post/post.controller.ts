@@ -25,9 +25,9 @@ import { randomUUID } from "crypto";
 
 @Controller("post")
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
-  @Post("")
+  @Post()
   // @UseInterceptors(
   //   FileInterceptor("file", {
   //     storage: diskStorage({
@@ -45,6 +45,7 @@ export class PostController {
     @Req() request: Request,
     @UploadedFiles() images: Express.Multer.File[],
   ) {
+
     return this.postService.createPost(
       createPostDto,
       request,
@@ -67,12 +68,14 @@ export class PostController {
     res.sendFile(filename, { root: "./public/post" });
   }
 
+
   @Get(":id")
-  onePost(@Req() request: Request, @Param("id", ParseIntPipe) id: string) {
-    return this.postService.getOnePost(request["user"].sub, id);
+  onePost(@Param("id") id: string) {
+    console.log("in post")
+    return this.postService.getOnePost(id);
   }
 
-  @Put("updatePost/:id")
+  @Put("/:id")
   updatePost(
     @Param("id", ParseIntPipe) id: string,
     @Body() updatePostDto: UpdatePostDto,
@@ -81,16 +84,21 @@ export class PostController {
     return this.postService.updatePost(id, request["user"].sub, updatePostDto);
   }
 
-  @Put("likePost/:id")
-  likePost(@Param("id", ParseIntPipe) id: string, @Req() request: Request) {
+  @Get("/isLiked/:id")
+  getLikes(@Param("id") id: string, @Req() request: Request) {
+    return this.postService.isLiked(id, request["user"].sub);
+  }
+
+  @Post("like/:id")
+  likePost(@Param("id") id: string, @Req() request: Request) {
     return this.postService.likePost(id, request["user"].sub);
   }
-  @Put("removeLike/:id")
-  removeLike(@Param("id", ParseIntPipe) id: string, @Req() request: Request) {
+  @Post("unLike/:id")
+  removeLike(@Param("id") id: string, @Req() request: Request) {
     return this.postService.removeLike(id, request["user"].sub);
   }
 
-  @Delete("deletePost/:id")
+  @Delete("delete/:id")
   deletePost(@Param("id", ParseIntPipe) id: string, @Req() request: Request) {
     return this.postService.deletePost(request["user"].sub, id);
   }

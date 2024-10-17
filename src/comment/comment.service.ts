@@ -5,7 +5,7 @@ import { DatabaseService } from "src/database/database.service";
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) { }
 
   async postComment(postId: string, userId: string, content: string) {
     try {
@@ -20,9 +20,11 @@ export class CommentService {
           },
         },
       });
+      console.log("comment created")
       return newComment;
-    } catch {
-      throw new NotFoundException("Post not found");
+    } catch (e) {
+      console.log(e)
+      throw new NotFoundException("post not found ");
     }
   }
 

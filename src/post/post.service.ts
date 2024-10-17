@@ -14,8 +14,8 @@ export class PostService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly userService: UserService,
-    private readonly s3Service:S3Service 
-  ) {}
+    private readonly s3Service: S3Service
+  ) { }
 
   async createPost(
     createPostDto: CreatePostDto,
@@ -41,7 +41,7 @@ export class PostService {
           authorId: userId,
           imagesKey: imageKeys,
           imagesUrl: imageUrls,
-          
+
         },
       });
       return NewPost;
@@ -50,6 +50,32 @@ export class PostService {
       return e.message;
     }
   }
+
+  async isLiked(postId: string, userId: string) {
+    try {
+      // Fetch the likes for the post and check if the userId exists in the likes array
+      const post = await this.databaseService.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          likes: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      const userLiked = post?.likes.some((like) => like.id === userId);
+
+      return userLiked || false;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
+
 
   async Feed(userId: string) {
     try {
@@ -106,13 +132,40 @@ export class PostService {
     }
   }
 
-  async getOnePost(userId: string, id: string) {
+  async getOnePost(id: string) {
     try {
       const foundedPost = await this.databaseService.post.findUnique({
         where: {
           id: id,
-          authorId: userId,
         },
+        select: {
+          id: true,
+          imagesUrl: true,
+          _count: {
+            select: {
+              likes: true,
+              Comment: true
+            }
+          },
+          Comment: {
+            select: {
+              id: true,
+              content: true,
+              commentedBy: {
+                select: {
+                  username: true,
+                  userPreferences: {
+                    select: {
+                      imageUrl: true
+                    }
+                  }
+                }
+              }
+
+            }
+
+          }
+        }
       });
       return foundedPost;
     } catch (e) {
@@ -129,7 +182,12 @@ export class PostService {
         select: {
           id: true,
           content: true,
-          likes: true,
+          _count: {
+            select: {
+              likes: true,
+              Comment: true,
+            },
+          },
           imagesUrl: true,
         },
       });
@@ -169,6 +227,7 @@ export class PostService {
           likedPost: true,
         },
       });
+      console.log("liked the post")
       return updatedUser;
     } catch (e) {
       return e.message;
